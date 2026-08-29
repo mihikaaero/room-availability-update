@@ -101,10 +101,13 @@ export function BookingForm({
 
 
   function toggleVenue(id: string) {
+    const venue = venues.find((v) => v.id === id);
+    if (venue && !venueAllowedFor(venue.code, orgAbbreviation)) return;
     setVenueIds((prev) =>
       prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id],
     );
   }
+
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();

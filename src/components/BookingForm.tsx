@@ -23,7 +23,7 @@ import {
   todayISO,
   type Purpose,
 } from "@/lib/campus";
-import { useOrganizations, useVenues } from "@/lib/data";
+import { useVenues } from "@/lib/data";
 
 import {
   BookingConfirmation,

@@ -20,9 +20,7 @@ import {
   PURPOSES,
   formatDate,
   formatRange,
-  restrictedVenueNote,
   todayISO,
-  venueAllowedFor,
   type Purpose,
 } from "@/lib/campus";
 import { useOrganizations, useVenues } from "@/lib/data";

@@ -63,26 +63,3 @@ export function minutesBetween(start: string, end: string) {
   return toMin(end) - toMin(start);
 }
 
-/**
- * Rooms that only specific organizations may book. Every other organization
- * still sees the room in the venue picker, but greyed out and unselectable.
- */
-export const RESTRICTED_VENUES: Record<string, readonly string[]> = {
-  L1: ["NCC", "NSS"],
-  L2: ["NCC", "NSS"],
-  L3: ["NCC", "NSS"],
-  L8: ["NCC", "NSS"],
-  L9: ["NCC", "NSS"],
-};
-
-export function venueAllowedFor(venueCode: string, orgAbbreviation?: string | null) {
-  const allowed = RESTRICTED_VENUES[venueCode];
-  if (!allowed) return true;
-  if (!orgAbbreviation) return false;
-  return allowed.includes(orgAbbreviation.toUpperCase());
-}
-
-export function restrictedVenueNote(venueCode: string) {
-  const allowed = RESTRICTED_VENUES[venueCode];
-  return allowed ? `${venueCode} is reserved for ${allowed.join(" and ")} only` : "";
-}

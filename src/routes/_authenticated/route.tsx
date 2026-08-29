@@ -43,8 +43,13 @@ function AppShell() {
   }
 
   const links = session?.isAdmin
-    ? [...NAV, { to: "/all-bookings", label: "Admin Console" } as const]
+    ? [
+        ...NAV,
+        { to: "/all-bookings", label: "Admin Console" } as const,
+        { to: "/org-accounts", label: "Organisation Accounts" } as const,
+      ]
     : NAV;
+
 
 
   return (

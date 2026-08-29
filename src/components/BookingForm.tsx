@@ -16,8 +16,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { PURPOSES, formatDate, formatRange, todayISO, type Purpose } from "@/lib/campus";
-import { useVenues } from "@/lib/data";
+import {
+  PURPOSES,
+  formatDate,
+  formatRange,
+  restrictedVenueNote,
+  todayISO,
+  venueAllowedFor,
+  type Purpose,
+} from "@/lib/campus";
+import { useOrganizations, useVenues } from "@/lib/data";
+
 import {
   BookingConfirmation,
   type ConfirmedBooking,

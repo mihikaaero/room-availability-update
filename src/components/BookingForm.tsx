@@ -16,8 +16,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { PURPOSES, formatDate, formatRange, todayISO, type Purpose } from "@/lib/campus";
-import { useVenues } from "@/lib/data";
+import {
+  PURPOSES,
+  formatDate,
+  formatRange,
+  restrictedVenueNote,
+  todayISO,
+  venueAllowedFor,
+  type Purpose,
+} from "@/lib/campus";
+import { useOrganizations, useVenues } from "@/lib/data";
+
 import {
   BookingConfirmation,
   type ConfirmedBooking,
@@ -71,6 +80,10 @@ export function BookingForm({
   embedded?: boolean;
 }) {
   const { data: venues = [] } = useVenues();
+  const { data: organizations = [] } = useOrganizations();
+  const orgAbbreviation =
+    organizations.find((o) => o.id === organizationId)?.abbreviation ?? null;
+
   const queryClient = useQueryClient();
   const create = useServerFn(createBookingFn);
   const update = useServerFn(updateBookingFn);
@@ -88,10 +101,13 @@ export function BookingForm({
 
 
   function toggleVenue(id: string) {
+    const venue = venues.find((v) => v.id === id);
+    if (venue && !venueAllowedFor(venue.code, orgAbbreviation)) return;
     setVenueIds((prev) =>
       prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id],
     );
   }
+
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -279,17 +295,22 @@ export function BookingForm({
         <div className="flex flex-wrap gap-2 rounded-md border border-border bg-muted/40 p-3">
           {venues.map((venue) => {
             const selected = venueIds.includes(venue.id);
+            const allowed = venueAllowedFor(venue.code, orgAbbreviation);
             return (
               <button
                 type="button"
                 key={venue.id}
                 onClick={() => toggleVenue(venue.id)}
                 aria-pressed={selected}
+                disabled={!allowed}
+                title={allowed ? venue.label : restrictedVenueNote(venue.code)}
                 className={cn(
                   "rounded border px-3 py-1.5 text-sm font-medium transition-colors",
-                  selected
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-card text-foreground hover:bg-secondary",
+                  !allowed
+                    ? "cursor-not-allowed border-border bg-muted text-muted-foreground opacity-50"
+                    : selected
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-card text-foreground hover:bg-secondary",
                 )}
               >
                 {venue.code}
@@ -297,6 +318,12 @@ export function BookingForm({
             );
           })}
         </div>
+        {venues.some((v) => !venueAllowedFor(v.code, orgAbbreviation)) ? (
+          <p className="text-xs text-muted-foreground">
+            Greyed-out rooms are reserved for NCC and NSS.
+          </p>
+        ) : null}
+
       </div>
 
       {conflicts.length > 0 ? (

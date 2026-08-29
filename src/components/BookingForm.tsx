@@ -78,9 +78,6 @@ export function BookingForm({
   embedded?: boolean;
 }) {
   const { data: venues = [] } = useVenues();
-  const { data: organizations = [] } = useOrganizations();
-  const orgAbbreviation =
-    organizations.find((o) => o.id === organizationId)?.abbreviation ?? null;
 
   const queryClient = useQueryClient();
   const create = useServerFn(createBookingFn);

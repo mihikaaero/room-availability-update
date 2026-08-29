@@ -279,17 +279,22 @@ export function BookingForm({
         <div className="flex flex-wrap gap-2 rounded-md border border-border bg-muted/40 p-3">
           {venues.map((venue) => {
             const selected = venueIds.includes(venue.id);
+            const allowed = venueAllowedFor(venue.code, orgAbbreviation);
             return (
               <button
                 type="button"
                 key={venue.id}
                 onClick={() => toggleVenue(venue.id)}
                 aria-pressed={selected}
+                disabled={!allowed}
+                title={allowed ? venue.label : restrictedVenueNote(venue.code)}
                 className={cn(
                   "rounded border px-3 py-1.5 text-sm font-medium transition-colors",
-                  selected
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-card text-foreground hover:bg-secondary",
+                  !allowed
+                    ? "cursor-not-allowed border-border bg-muted text-muted-foreground opacity-50"
+                    : selected
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-card text-foreground hover:bg-secondary",
                 )}
               >
                 {venue.code}
@@ -297,6 +302,12 @@ export function BookingForm({
             );
           })}
         </div>
+        {venues.some((v) => !venueAllowedFor(v.code, orgAbbreviation)) ? (
+          <p className="text-xs text-muted-foreground">
+            Greyed-out rooms are reserved for NCC and NSS.
+          </p>
+        ) : null}
+
       </div>
 
       {conflicts.length > 0 ? (
